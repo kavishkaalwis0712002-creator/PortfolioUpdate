@@ -29,8 +29,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Prepare for Static Export
+        run: |
+          if [ -d "app/api" ]; then
+            mv app/api ./_temp_api
+          fi
+          if [ -d "app/admin" ]; then
+            mv app/admin ./_temp_admin
+          fi
+
       - name: Build Next.js
         run: npx next build
+
+      - name: Restore Backend Folders
+        if: always()
+        run: |
+          if [ -d "./_temp_api" ]; then
+            mv ./_temp_api app/api
+          fi
+          if [ -d "./_temp_admin" ]; then
+            mv ./_temp_admin app/admin
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
